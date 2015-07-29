@@ -61,7 +61,12 @@ module ho.watch {
 				window.setTimeout(callback, 1000 / 60);
 	  		};
 
-			fn(cb);
+			let wrap = () => {
+				fn(wrap);
+				cb();
+			}
+
+			wrap();
 		}
 
 		private copy(val: any): any {
