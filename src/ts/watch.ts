@@ -44,9 +44,10 @@ module ho.watch {
 			this.oldVal = this.copy(obj[name]);
 
 			this.watch(function() {
-				if(this.oldVal !== obj[name])
+				if(this.oldVal !== obj[name]) {
 					this.handler.call(null, obj, name, this.oldVal, obj[name]);
 					this.oldVal = this.copy(obj[name]);
+				}
 			}.bind(this));
 		}
 
