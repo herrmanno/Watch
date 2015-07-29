@@ -41,11 +41,12 @@ module ho.watch {
 		constructor(private obj: any, private name: string, private handler: Handler) {
 			this.oldVal = this.copy(obj[name]);
 
-			setInterval(() => {
+			setInterval(function() {
 				if(this.oldVal !== obj[name])
 					this.handler.call(null, obj, name, this.oldVal, obj[name]);
 					this.oldVal = this.copy(obj[name]);
-			}, interval);
+			}.bind(this),
+			interval);
 		}
 
 		private copy(val: any): any {
