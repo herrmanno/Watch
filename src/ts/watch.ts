@@ -5,7 +5,7 @@ module ho.watch {
 	export type Handler = (obj:any, name:string, oldV, newV)=>any;
 
 	export function watch(obj: any, name: string, handler: Handler) {
-		ie8 ? watchIE8(obj, name, handler) : watchNewer(obj, name, handler);
+		!ie8 ? watchIE8(obj, name, handler) : watchNewer(obj, name, handler);
 	}
 
 	function watchNewer(obj: any, name: string, handler: Handler): void {
@@ -16,7 +16,8 @@ module ho.watch {
 		};
 		let setter = function (val) {
 			oldval = newval;
-			return newval = handler.call(obj, name, oldval, val);
+			newval = val;
+			handler.call(obj, name, oldval, val);
 		};
 
 			if (delete obj[name]) {
@@ -42,7 +43,8 @@ module ho.watch {
 
 			setInterval(() => {
 				if(this.oldVal !== obj[name])
-					this.oldVal = this.handler.call(null, obj, name, this.oldVal, obj[name]);
+					this.handler.call(null, obj, name, this.oldVal, obj[name]);
+					this.oldVal = this.copy(obj[name]);
 			}, interval);
 		}
 
