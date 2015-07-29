@@ -1,0 +1,27 @@
+{
+  "name": "Watch",
+  "main": "watch.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/herrmanno/watch",
+  "authors": [
+    "OHerrmann92 <O.herrmann92@gmail.com>"
+  ],
+  "description": "Simple watch implmentation / polyill.",
+  "keywords": [
+    "watch",
+    "observe",
+    "js",
+    "javascript"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "tsconfig.json",
+    "gulpfile.js",
+    "package.json",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
