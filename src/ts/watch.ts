@@ -1,38 +1,14 @@
+interface Window {
+	webkitRequestAnimationFrame: (callback: FrameRequestCallback) => number;
+	mozRequestAnimationFrame: (callback: FrameRequestCallback) => number;
+	oRequestAnimationFrame: (callback: FrameRequestCallback) => number;
+}
+
 module ho.watch {
-	const ie8 = !-[1,];
-	export var interval: number = 400;
 
-	export type Handler = (obj:any, name:string, oldV, newV)=>any;
+	export type Handler = (obj:any, name:string, oldV:any, newV:any,  timestamp?: number)=>any;
 
-	export function watch(obj: any, name: string, handler: Handler) {
-		!ie8 ? watchIE8(obj, name, handler) : watchNewer(obj, name, handler);
-	}
-
-	function watchNewer(obj: any, name: string, handler: Handler): void {
-		let oldval = obj[name];
-		let newval = oldval
-		let getter = function () {
-			return newval;
-		};
-		let setter = function (val) {
-			oldval = newval;
-			newval = val;
-			handler.call(obj, name, oldval, val);
-		};
-
-			if (delete obj[name]) {
-				Object.defineProperty(this, name, {
-					  get: getter
-					, set: setter
-					, enumerable: true
-					, configurable: true
-				});
-			}
-			else
-				throw `Could not watch property ${name} on Object ${obj}`;
-	}
-
-	function watchIE8(obj: any, name: string, handler: Handler): void {
+	export function watch(obj: any, name: string, handler: Handler): void {
 		new Watcher(obj, name, handler);
 	}
 
@@ -43,16 +19,16 @@ module ho.watch {
 		constructor(private obj: any, private name: string, private handler: Handler) {
 			this.oldVal = this.copy(obj[name]);
 
-			this.watch(function() {
+			this.watch(timestamp => {
 				if(this.oldVal !== obj[name]) {
-					this.handler.call(null, obj, name, this.oldVal, obj[name]);
+					this.handler.call(null, obj, name, this.oldVal, obj[name], timestamp);
 					this.oldVal = this.copy(obj[name]);
 				}
-			}.bind(this));
+			});
 		}
 
-		private watch(cb: Function): void {
-			let fn =
+		private watch(cb: (timeStamp:number)=>any): void {
+			let fn: Function =
 			window.requestAnimationFrame       ||
 	  		window.webkitRequestAnimationFrame ||
 	  		window.mozRequestAnimationFrame    ||
@@ -62,12 +38,12 @@ module ho.watch {
 				window.setTimeout(callback, 1000 / 60);
 	  		};
 
-			let wrap = () => {
+			let wrap = (ts: number) => {
+				cb(ts);
 				fn(wrap);
-				cb();
 			}
 
-			wrap();
+			fn(wrap);
 		}
 
 		private copy(val: any): any {
